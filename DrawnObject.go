@@ -1,6 +1,8 @@
 package in3D
 
 import (
+	"fmt"
+
 	"github.com/bytearena/box2d"
 	"github.com/go-gl/gl/v4.1-core/gl"
 	"github.com/go-gl/mathgl/mgl32"
@@ -54,17 +56,18 @@ func initBodyPhisics(pos Position) *box2d.B2Body {
 	bd := box2d.MakeB2BodyDef()
 	bd.Position.Set(float64(pos.X), float64(pos.Y))
 	bd.Type = box2d.B2BodyType.B2_dynamicBody
-	bd.FixedRotation = true
+	// bd.FixedRotation = true
 	bd.AllowSleep = false
 
 	body := world.CreateBody(&bd)
 
 	shape := box2d.MakeB2PolygonShape()
-	shape.SetAsBox(0.5, 0.5)
+	shape.SetAsBox(1, 1)
 
 	fd := box2d.MakeB2FixtureDef()
 	fd.Shape = &shape
 	fd.Density = 20.0
+	fd.Restitution = 0.2
 	body.CreateFixtureFromDef(&fd)
 	return body
 }
@@ -119,8 +122,14 @@ func (d *DrawnObject) translateRotate() *mgl32.Mat4 {
 func (d *DrawnObject) Draw() {
 
 	if Feature[Physics] {
-		d.Position.X = float32(d.Body.GetPosition().X)
-		d.Position.Y = float32(d.Body.GetPosition().Y)
+		p := d.Body.GetPosition()
+		d.Position.X = float32(p.X)
+		d.Position.Y = float32(p.Y)
+
+		a := d.Body.GetAngle()
+		d.ZRotation = float32(a)
+
+		fmt.Println(a)
 	}
 
 	if d.SceneLogic != nil {
