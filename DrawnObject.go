@@ -46,30 +46,6 @@ func NewPointsObject(position Position, points []float32, texture uint32, color 
 	return NewMeshObject(position, mesh, program)
 }
 
-func initBodyPhisics(pos Position) *box2d.B2Body {
-	if !Feature[Physics] {
-		return nil
-	}
-
-	bd := box2d.MakeB2BodyDef()
-	bd.Position.Set(float64(pos.X), float64(pos.Y))
-	bd.Type = box2d.B2BodyType.B2_dynamicBody
-	// bd.FixedRotation = true
-	bd.AllowSleep = false
-
-	body := world.CreateBody(&bd)
-
-	shape := box2d.MakeB2PolygonShape()
-	shape.SetAsBox(1, 1)
-
-	fd := box2d.MakeB2FixtureDef()
-	fd.Shape = &shape
-	fd.Density = 20.0
-	fd.Restitution = 0.2
-	body.CreateFixtureFromDef(&fd)
-	return body
-}
-
 // NewMeshObject : Create new DrawnObject
 func NewMeshObject(position Position, mesh *Mesh, program uint32) *DrawnObject {
 
@@ -104,6 +80,29 @@ func NewMeshObject(position Position, mesh *Mesh, program uint32) *DrawnObject {
 	d.Position = position
 	d.Program = program
 	return d
+}
+
+func initBodyPhisics(pos Position) *box2d.B2Body {
+	if !Feature[Physics] {
+		return nil
+	}
+
+	bd := box2d.MakeB2BodyDef()
+	bd.Position.Set(float64(pos.X), float64(pos.Y))
+	bd.Type = box2d.B2BodyType.B2_dynamicBody
+	bd.AllowSleep = false
+
+	body := world.CreateBody(&bd)
+
+	shape := box2d.MakeB2PolygonShape()
+	shape.SetAsBox(1, 1)
+
+	fd := box2d.MakeB2FixtureDef()
+	fd.Shape = &shape
+	fd.Density = 20.0
+	fd.Restitution = 0.2
+	body.CreateFixtureFromDef(&fd)
+	return body
 }
 
 func (d *DrawnObject) translateRotate() *mgl32.Mat4 {

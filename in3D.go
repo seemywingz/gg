@@ -246,7 +246,7 @@ func initPhysics() {
 		ground := world.CreateBody(&bd)
 
 		shape := box2d.MakeB2EdgeShape()
-		shape.Set(box2d.MakeB2Vec2(-20.0, 0.0), box2d.MakeB2Vec2(20.0, 0.0))
+		shape.Set(box2d.MakeB2Vec2(-200.0, 0.0), box2d.MakeB2Vec2(200.0, 0.0))
 		ground.CreateFixture(&shape, 0.0)
 	}
 }
