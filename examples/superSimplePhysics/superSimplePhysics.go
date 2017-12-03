@@ -15,7 +15,8 @@ func main() {
 	light.Position = in3D.NewPosition(0, 1, 10)
 	light.Radius = 1000
 
-	in3D.GetCamera().Position = in3D.NewPosition(0, 80, 400)
+	in3D.GetCamera().Position = in3D.NewPosition(0, 5, 200)
+	// in3D.GetCamera().Position = in3D.NewPosition(0, 80, 400)
 
 	in3D.Enable(in3D.Physics, true)
 	in3D.Enable(in3D.PointerLock, true)
@@ -40,9 +41,9 @@ func main() {
 }
 
 func explode() {
-	for i := 1; i < 1000; i++ {
+	for i := 1; i < 20; i++ {
 		obj := in3D.NewPointsObject(
-			in3D.NewPosition(0, float32(i), -20),
+			in3D.NewPosition(0, float32(i*10), -20),
 			in3D.Cube,
 			in3D.NoTexture,
 			[]float32{0, 1, 1},

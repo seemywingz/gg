@@ -8,9 +8,9 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/bytearena/box2d"
 	"github.com/go-gl/gl/v4.1-core/gl"
 	"github.com/go-gl/glfw/v3.2/glfw"
+	"github.com/ianremmler/ode"
 )
 
 // Init : initializes glfw and returns a Window to use, then InitGL
@@ -185,15 +185,6 @@ func SwapBuffers() {
 	window.SwapBuffers()
 }
 
-// Update :
-func Update() {
-	camera.Update()
-	lightManager.Update()
-	if Feature[Physics] {
-		world.Step(TimeStep, VelocityIterations, PositionIterations)
-	}
-}
-
 // GetCamera : return pointer to gg camera
 func GetCamera() *Camera {
 	return camera
@@ -234,20 +225,41 @@ func TogglePointerLock() {
 
 func initPhysics() {
 
-	// Define the gravity vector.
-	gravity = box2d.MakeB2Vec2(0.0, -10.0)
+	ode.Init(0, ode.AllAFlag)
+	world = ode.NewWorld()
+	world.SetGravity(ode.V3(0, -9.8, 0))
 
-	// Construct a world object, which will hold and simulate the rigid bodies.
-	world = box2d.MakeB2World(gravity)
+	space = ode.NilSpace().NewHashSpace()
+	space.NewPlane(ode.V4(0, 1, 0, 0))
 
-	// Ground body
-	{
-		bd := box2d.MakeB2BodyDef()
-		ground := world.CreateBody(&bd)
+	contactgroup = ode.NewJointGroup(1000000)
 
-		shape := box2d.MakeB2EdgeShape()
-		shape.Set(box2d.MakeB2Vec2(-2000.0, 0.0), box2d.MakeB2Vec2(2000.0, 0.0))
-		ground.CreateFixture(&shape, 0.0)
+}
+func nearCallBack(data interface{}, obj1, obj2 ode.Geom) {
+	contact := ode.NewContact()
+	body1, body2 := obj1.Body(), obj2.Body()
+	if body1 != 0 && body2 != 0 && body1.Connected(body2) {
+		return
+	}
+	contact.Surface.Mode = 0
+	contact.Surface.Mu = 0.1
+	contact.Surface.Mu2 = 0
+	cts := obj1.Collide(obj2, 1, 0)
+	if len(cts) > 0 {
+		contact.Geom = cts[0]
+		ct := world.NewContactJoint(contactgroup, contact)
+		ct.Attach(body1, body2)
+	}
+}
+
+// Update :
+func Update() {
+	camera.Update()
+	lightManager.Update()
+	if Feature[Physics] {
+		space.Collide(0, nearCallBack)
+		world.Step(0.05)
+		contactgroup.Empty()
 	}
 }
 

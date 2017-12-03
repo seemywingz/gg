@@ -1,15 +1,15 @@
 package in3D
 
 import (
-	"github.com/bytearena/box2d"
 	"github.com/go-gl/gl/v4.1-core/gl"
 	"github.com/go-gl/mathgl/mgl32"
+	"github.com/ianremmler/ode"
 )
 
 // DrawnObject : a struct to hold openGL object data
 type DrawnObject struct {
 	Mesh           *Mesh
-	Body           *box2d.B2Body
+	Body           *ode.Body
 	MVPID          int32
 	ModelMatrixID  int32
 	NormalMatrixID int32
@@ -82,27 +82,26 @@ func NewMeshObject(position Position, mesh *Mesh, program uint32) *DrawnObject {
 	return d
 }
 
-func initBodyPhisics(pos Position) *box2d.B2Body {
+func initBodyPhisics(pos Position) *ode.Body {
 	if !Feature[Physics] {
 		return nil
 	}
 
-	bd := box2d.MakeB2BodyDef()
-	bd.Position.Set(float64(pos.X), float64(pos.Y))
-	bd.Type = box2d.B2BodyType.B2_dynamicBody
-	bd.AllowSleep = false
+	body := world.NewBody()
+	body.SetPosition(ode.V3(float64(pos.X), float64(pos.Y), float64(pos.Z)))
+	body.SetAngularVelocity(ode.V3(0, 0, 0))
+	body.SetAngularDamping(0.02)
+	body.SetLinearDamping(0.02)
 
-	body := world.CreateBody(&bd)
+	mass := ode.NewMass()
+	mass.SetBox(1, ode.V3(1, 1, 1))
+	// mass.Adjust(sphereMass)
+	body.SetMass(mass)
 
-	shape := box2d.MakeB2PolygonShape()
-	shape.SetAsBox(1, 1)
+	box := space.NewBox(ode.V3(1, 1, 1))
+	box.SetBody(body)
 
-	fd := box2d.MakeB2FixtureDef()
-	fd.Shape = &shape
-	fd.Density = 20.0
-	fd.Restitution = 0.2
-	body.CreateFixtureFromDef(&fd)
-	return body
+	return &body
 }
 
 func (d *DrawnObject) translateRotate() *mgl32.Mat4 {
@@ -112,10 +111,12 @@ func (d *DrawnObject) translateRotate() *mgl32.Mat4 {
 	yrotMatrix := mgl32.HomogRotate3DY(mgl32.DegToRad(d.YRotation))
 	zrotMatrix := mgl32.HomogRotate3DZ(mgl32.DegToRad(d.ZRotation))
 	if Feature[Physics] {
-		p := d.Body.GetPosition()
-		d.Position.X = float32(p.X)
-		d.Position.Y = float32(p.Y)
-		zrotMatrix = mgl32.HomogRotate3DZ(float32(d.Body.GetAngle()))
+		p := d.Body.Position()
+		// fmt.Println(p)
+		d.Position.X = float32(p[0])
+		d.Position.Y = float32(p[1])
+		d.Position.Z = float32(p[2])
+		// zrotMatrix = mgl32.HomogRotate3DZ(float32(d.Body.GetAngle()))
 	}
 	final := model.Mul4(xrotMatrix.Mul4(yrotMatrix.Mul4(zrotMatrix)))
 	return &final

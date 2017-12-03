@@ -9,13 +9,6 @@ const (
 	Press = glfw.Press
 	// Releasese :
 	Releasese = glfw.Release
-
-	// TimeStep :
-	TimeStep = 1.0 / 60.0
-	// VelocityIterations :
-	VelocityIterations = 8
-	// PositionIterations :
-	PositionIterations = 3
 )
 
 const (

@@ -1,8 +1,8 @@
 package in3D
 
 import (
-	"github.com/bytearena/box2d"
 	"github.com/go-gl/glfw/v3.2/glfw"
+	"github.com/ianremmler/ode"
 )
 
 // SceneLogic :
@@ -37,8 +37,9 @@ var (
 	camera       *Camera
 	lightManager *LightManager
 
-	gravity box2d.B2Vec2
-	world   box2d.B2World
+	world        ode.World
+	space        ode.Space
+	contactgroup ode.JointGroup
 
 	// Feature : used to enable features
 	Feature map[int]bool
