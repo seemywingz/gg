@@ -8,6 +8,7 @@ import (
 	"runtime"
 	"strings"
 
+	"github.com/bytearena/box2d"
 	"github.com/go-gl/gl/v4.1-core/gl"
 	"github.com/go-gl/glfw/v3.2/glfw"
 )
@@ -64,6 +65,7 @@ func InitFeatures() {
 	Feature = make(map[int]bool)
 	Feature[Look] = false
 	Feature[Move] = false
+	Feature[Physics] = false
 	Feature[FlyMode] = false
 	Feature[PointerLock] = false
 }
@@ -187,6 +189,9 @@ func SwapBuffers() {
 func Update() {
 	camera.Update()
 	lightManager.Update()
+	if Feature[Physics] {
+		world.Step(TimeStep, VelocityIterations, PositionIterations)
+	}
 }
 
 // GetCamera : return pointer to gg camera
@@ -227,6 +232,25 @@ func TogglePointerLock() {
 	}
 }
 
+func initPhysics() {
+
+	// Define the gravity vector.
+	gravity = box2d.MakeB2Vec2(0.0, -10.0)
+
+	// Construct a world object, which will hold and simulate the rigid bodies.
+	world = box2d.MakeB2World(gravity)
+
+	// Ground body
+	{
+		bd := box2d.MakeB2BodyDef()
+		ground := world.CreateBody(&bd)
+
+		shape := box2d.MakeB2EdgeShape()
+		shape.Set(box2d.MakeB2Vec2(-20.0, 0.0), box2d.MakeB2Vec2(20.0, 0.0))
+		ground.CreateFixture(&shape, 0.0)
+	}
+}
+
 // Enable :
 func Enable(feature int, enabled bool) {
 
@@ -241,5 +265,8 @@ func Enable(feature int, enabled bool) {
 	case FlyMode:
 		Feature[Look] = enabled
 		Feature[Move] = enabled
+	case Physics:
+		Feature[Physics] = enabled
+		initPhysics()
 	}
 }

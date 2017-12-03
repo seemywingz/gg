@@ -1,6 +1,9 @@
 package in3D
 
-import "github.com/go-gl/glfw/v3.2/glfw"
+import (
+	"github.com/bytearena/box2d"
+	"github.com/go-gl/glfw/v3.2/glfw"
+)
 
 // SceneLogic :
 type SceneLogic func(s *SceneData)
@@ -33,6 +36,9 @@ var (
 	window       *glfw.Window
 	camera       *Camera
 	lightManager *LightManager
+
+	gravity box2d.B2Vec2
+	world   box2d.B2World
 
 	// Feature : used to enable features
 	Feature map[int]bool

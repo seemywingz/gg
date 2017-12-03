@@ -1,6 +1,7 @@
 package in3D
 
 import (
+	"github.com/bytearena/box2d"
 	"github.com/go-gl/gl/v4.1-core/gl"
 	"github.com/go-gl/mathgl/mgl32"
 )
@@ -8,6 +9,7 @@ import (
 // DrawnObject : a struct to hold openGL object data
 type DrawnObject struct {
 	Mesh           *Mesh
+	Body           *box2d.B2Body
 	MVPID          int32
 	ModelMatrixID  int32
 	NormalMatrixID int32
@@ -44,6 +46,29 @@ func NewPointsObject(position Position, points []float32, texture uint32, color 
 	return NewMeshObject(position, mesh, program)
 }
 
+func initBodyPhisics(pos Position) *box2d.B2Body {
+	if !Feature[Physics] {
+		return nil
+	}
+
+	bd := box2d.MakeB2BodyDef()
+	bd.Position.Set(float64(pos.X), float64(pos.Y))
+	bd.Type = box2d.B2BodyType.B2_dynamicBody
+	bd.FixedRotation = true
+	bd.AllowSleep = false
+
+	body := world.CreateBody(&bd)
+
+	shape := box2d.MakeB2PolygonShape()
+	shape.SetAsBox(0.5, 0.5)
+
+	fd := box2d.MakeB2FixtureDef()
+	fd.Shape = &shape
+	fd.Density = 20.0
+	body.CreateFixtureFromDef(&fd)
+	return body
+}
+
 // NewMeshObject : Create new DrawnObject
 func NewMeshObject(position Position, mesh *Mesh, program uint32) *DrawnObject {
 
@@ -62,6 +87,7 @@ func NewMeshObject(position Position, mesh *Mesh, program uint32) *DrawnObject {
 
 	d := &DrawnObject{
 		mesh,
+		initBodyPhisics(position),
 		MVPID,
 		ModelMatrixID,
 		NormalMatrixID,
@@ -91,6 +117,11 @@ func (d *DrawnObject) translateRotate() *mgl32.Mat4 {
 
 // Draw : draw the object
 func (d *DrawnObject) Draw() {
+
+	if Feature[Physics] {
+		d.Position.X = float32(d.Body.GetPosition().X)
+		d.Position.Y = float32(d.Body.GetPosition().Y)
+	}
 
 	if d.SceneLogic != nil {
 		d.SceneLogic(&d.SceneData)
