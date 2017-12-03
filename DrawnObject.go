@@ -1,8 +1,6 @@
 package in3D
 
 import (
-	"fmt"
-
 	"github.com/bytearena/box2d"
 	"github.com/go-gl/gl/v4.1-core/gl"
 	"github.com/go-gl/mathgl/mgl32"
@@ -114,23 +112,18 @@ func (d *DrawnObject) translateRotate() *mgl32.Mat4 {
 	xrotMatrix := mgl32.HomogRotate3DX(mgl32.DegToRad(d.XRotation))
 	yrotMatrix := mgl32.HomogRotate3DY(mgl32.DegToRad(d.YRotation))
 	zrotMatrix := mgl32.HomogRotate3DZ(mgl32.DegToRad(d.ZRotation))
+	if Feature[Physics] {
+		p := d.Body.GetPosition()
+		d.Position.X = float32(p.X)
+		d.Position.Y = float32(p.Y)
+		zrotMatrix = mgl32.HomogRotate3DZ(float32(d.Body.GetAngle()))
+	}
 	final := model.Mul4(xrotMatrix.Mul4(yrotMatrix.Mul4(zrotMatrix)))
 	return &final
 }
 
 // Draw : draw the object
 func (d *DrawnObject) Draw() {
-
-	if Feature[Physics] {
-		p := d.Body.GetPosition()
-		d.Position.X = float32(p.X)
-		d.Position.Y = float32(p.Y)
-
-		a := d.Body.GetAngle()
-		d.ZRotation = float32(a)
-
-		fmt.Println(a)
-	}
 
 	if d.SceneLogic != nil {
 		d.SceneLogic(&d.SceneData)
