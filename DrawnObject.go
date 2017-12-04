@@ -87,38 +87,52 @@ func initBodyPhisics(pos Position) *ode.Body {
 		return nil
 	}
 
+	size := 2.0
+
 	body := world.NewBody()
 	body.SetPosition(ode.V3(float64(pos.X), float64(pos.Y), float64(pos.Z)))
-	body.SetAngularVelocity(ode.V3(0, 0, 0))
-	body.SetAngularDamping(0.02)
+	body.SetAngularDamping(0.2)
 	body.SetLinearDamping(0.02)
 
 	mass := ode.NewMass()
-	mass.SetBox(1, ode.V3(1, 1, 1))
-	// mass.Adjust(sphereMass)
+	mass.SetBox(1, ode.V3(size, size, size))
 	body.SetMass(mass)
 
-	box := space.NewBox(ode.V3(1, 1, 1))
+	box := space.NewBox(ode.V3(size, size, size))
 	box.SetBody(body)
 
 	return &body
 }
 
 func (d *DrawnObject) translateRotate() *mgl32.Mat4 {
-	model := mgl32.Translate3D(d.X, d.Y, d.Z).
-		Mul4(mgl32.Scale3D(d.Scale, d.Scale, d.Scale))
-	xrotMatrix := mgl32.HomogRotate3DX(mgl32.DegToRad(d.XRotation))
-	yrotMatrix := mgl32.HomogRotate3DY(mgl32.DegToRad(d.YRotation))
-	zrotMatrix := mgl32.HomogRotate3DZ(mgl32.DegToRad(d.ZRotation))
+
+	var final mgl32.Mat4
+
 	if Feature[Physics] {
 		p := d.Body.Position()
-		// fmt.Println(p)
 		d.Position.X = float32(p[0])
 		d.Position.Y = float32(p[1])
 		d.Position.Z = float32(p[2])
-		// zrotMatrix = mgl32.HomogRotate3DZ(float32(d.Body.GetAngle()))
+
+		R := d.Body.Rotation()
+
+		final = mgl32.Mat4{float32(R[0][0]), float32(R[1][0]), float32(R[2][0]), 0.0,
+			float32(R[0][1]), float32(R[1][1]), float32(R[2][1]), 0.0,
+			float32(R[0][2]), float32(R[1][2]), float32(R[2][2]), 0.0,
+			float32(p[0]), float32(p[1]), float32(p[2]), 1.0}
+
+	} else {
+
+		model := mgl32.Translate3D(d.X, d.Y, d.Z).
+			Mul4(mgl32.Scale3D(d.Scale, d.Scale, d.Scale))
+
+		xrotMatrix := mgl32.HomogRotate3DX(mgl32.DegToRad(d.XRotation))
+		yrotMatrix := mgl32.HomogRotate3DY(mgl32.DegToRad(d.YRotation))
+		zrotMatrix := mgl32.HomogRotate3DZ(mgl32.DegToRad(d.ZRotation))
+
+		final = model.Mul4(xrotMatrix.Mul4(yrotMatrix.Mul4(zrotMatrix)))
 	}
-	final := model.Mul4(xrotMatrix.Mul4(yrotMatrix.Mul4(zrotMatrix)))
+
 	return &final
 }
 
