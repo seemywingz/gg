@@ -229,9 +229,8 @@ func initPhysics() {
 	world = ode.NewWorld()
 	world.SetGravity(ode.V3(0, -9.8, 0))
 	world.SetAutoDisable(true)
-	world.SetAutoDisableSteps(2)
+	// world.SetAutoDisableSteps(2)
 	world.SetContactSurfaceLayer(0.001)
-	// world.SetERP(0.2)
 
 	space = ode.NilSpace().NewHashSpace()
 	space.NewPlane(ode.V4(0, 1, 0, 0))
@@ -240,14 +239,13 @@ func initPhysics() {
 }
 
 func nearCallBack(data interface{}, obj1, obj2 ode.Geom) {
-	contact := ode.NewContact()
-	body1, body2 := obj1.Body(), obj2.Body()
 
+	contact := ode.NewContact()
 	contact.Surface.Mu = 100
 
-	cts := obj1.Collide(obj2, 4, 0)
+	body1, body2 := obj1.Body(), obj2.Body()
 
-	for _, c := range cts {
+	for _, c := range obj1.Collide(obj2, 4, 0) {
 		contact.Geom = c
 		ctj := world.NewContactJoint(contactgroup, contact)
 		ctj.Attach(body1, body2)

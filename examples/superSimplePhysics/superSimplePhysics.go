@@ -7,6 +7,7 @@ import (
 
 var objects []*in3D.DrawnObject
 var exploding bool
+var texture uint32
 
 func main() {
 
@@ -14,8 +15,8 @@ func main() {
 	window := in3D.GetWindow()
 
 	light := in3D.NewLight()
-	light.Position = in3D.NewPosition(0, 1, 10)
-	light.Radius = 1000
+	light.Position = in3D.NewPosition(0, 100, 0)
+	light.Radius = 10000
 
 	in3D.GetCamera().Position = in3D.NewPosition(0, 2, 10)
 
@@ -23,6 +24,9 @@ func main() {
 	in3D.Enable(in3D.PointerLock, true)
 	in3D.Enable(in3D.FlyMode, true)
 
+	in3D.SetRelPath("../assets/textures")
+	texture = in3D.NoTexture
+	// texture = in3D.NewTexture("box.jpg")
 	explode()
 
 	for !in3D.ShouldClose() {
@@ -42,12 +46,13 @@ func main() {
 }
 
 func explode() {
-	for i := 1; i < 2; i++ {
+	for i := 1; i < 10; i++ {
 		obj := in3D.NewPointsObject(
 			in3D.NewPosition(0, float32(i*10), -20),
 			in3D.Cube,
-			in3D.NoTexture,
-			[]float32{0, 1, 1},
+			texture,
+			[]float32{1, 1, 1},
+			// []float32{in3D.Randomf(), in3D.Randomf(), in3D.Randomf()},
 			in3D.Shader["phong"],
 		)
 		objects = append(objects, obj)

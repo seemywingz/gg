@@ -108,13 +108,13 @@ func (d *DrawnObject) translateRotate() *mgl32.Mat4 {
 	var final mgl32.Mat4
 
 	if Feature[Physics] {
+
 		p := d.Body.Position()
 		d.Position.X = float32(p[0])
 		d.Position.Y = float32(p[1])
 		d.Position.Z = float32(p[2])
 
 		R := d.Body.Rotation()
-
 		final = mgl32.Mat4{
 			float32(R[0][0]), float32(R[1][0]), float32(R[2][0]), 0.0,
 			float32(R[0][1]), float32(R[1][1]), float32(R[2][1]), 0.0,
