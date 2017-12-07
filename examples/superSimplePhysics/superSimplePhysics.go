@@ -6,17 +6,18 @@ import (
 )
 
 var objects []*in3D.DrawnObject
+var exploding bool
 
 func main() {
 
 	in3D.Init(800, 600, "Simple Cube in3D")
 	window := in3D.GetWindow()
+
 	light := in3D.NewLight()
 	light.Position = in3D.NewPosition(0, 1, 10)
 	light.Radius = 1000
 
-	in3D.GetCamera().Position = in3D.NewPosition(0, 5, 200)
-	// in3D.GetCamera().Position = in3D.NewPosition(0, 80, 400)
+	in3D.GetCamera().Position = in3D.NewPosition(0, 2, 10)
 
 	in3D.Enable(in3D.Physics, true)
 	in3D.Enable(in3D.PointerLock, true)
@@ -27,8 +28,8 @@ func main() {
 	for !in3D.ShouldClose() {
 		in3D.Update()
 
-		// Press w
-		if window.GetKey(glfw.KeyF) == glfw.Press {
+		// Press e
+		if window.GetKey(glfw.KeyE) == in3D.Press && !exploding {
 			explode()
 		}
 
@@ -41,7 +42,7 @@ func main() {
 }
 
 func explode() {
-	for i := 1; i < 20; i++ {
+	for i := 1; i < 2; i++ {
 		obj := in3D.NewPointsObject(
 			in3D.NewPosition(0, float32(i*10), -20),
 			in3D.Cube,

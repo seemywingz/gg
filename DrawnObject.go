@@ -91,8 +91,7 @@ func initBodyPhisics(pos Position) *ode.Body {
 
 	body := world.NewBody()
 	body.SetPosition(ode.V3(float64(pos.X), float64(pos.Y), float64(pos.Z)))
-	body.SetAngularDamping(0.2)
-	body.SetLinearDamping(0.02)
+	body.SetAutoDisable(true)
 
 	mass := ode.NewMass()
 	mass.SetBox(1, ode.V3(size, size, size))
@@ -116,7 +115,8 @@ func (d *DrawnObject) translateRotate() *mgl32.Mat4 {
 
 		R := d.Body.Rotation()
 
-		final = mgl32.Mat4{float32(R[0][0]), float32(R[1][0]), float32(R[2][0]), 0.0,
+		final = mgl32.Mat4{
+			float32(R[0][0]), float32(R[1][0]), float32(R[2][0]), 0.0,
 			float32(R[0][1]), float32(R[1][1]), float32(R[2][1]), 0.0,
 			float32(R[0][2]), float32(R[1][2]), float32(R[2][2]), 0.0,
 			float32(p[0]), float32(p[1]), float32(p[2]), 1.0}
