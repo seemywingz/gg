@@ -25,8 +25,8 @@ func main() {
 	in3D.Enable(in3D.FlyMode, true)
 
 	in3D.SetRelPath("../assets/textures")
-	texture = in3D.NoTexture
-	// texture = in3D.NewTexture("box.jpg")
+	// texture = in3D.NoTexture
+	texture = in3D.NewTexture("seemywingz.jpg")
 	explode()
 
 	for !in3D.ShouldClose() {
@@ -48,11 +48,10 @@ func main() {
 func explode() {
 	for i := 1; i < 10; i++ {
 		obj := in3D.NewPointsObject(
-			in3D.NewPosition(0, float32(i*10), -20),
+			in3D.NewPosition(0, float32(i*10)+0.3, -20),
 			in3D.Cube,
 			texture,
 			[]float32{1, 1, 1},
-			// []float32{in3D.Randomf(), in3D.Randomf(), in3D.Randomf()},
 			in3D.Shader["phong"],
 		)
 		objects = append(objects, obj)

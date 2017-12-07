@@ -227,10 +227,12 @@ func initPhysics() {
 
 	ode.Init(0, ode.AllAFlag)
 	world = ode.NewWorld()
-	world.SetGravity(ode.V3(0, -9.8, 0))
+	world.SetCFM(0.0003)
 	world.SetAutoDisable(true)
-	// world.SetAutoDisableSteps(2)
+	world.SetAngularDamping(0.02)
+	world.SetLinearDamping(0.02)
 	world.SetContactSurfaceLayer(0.001)
+	world.SetGravity(ode.V3(0, -9.8, 0))
 
 	space = ode.NilSpace().NewHashSpace()
 	space.NewPlane(ode.V4(0, 1, 0, 0))
