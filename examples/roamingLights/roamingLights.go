@@ -72,7 +72,7 @@ func loadTextures() {
 
 func main() {
 
-	in3D.Init(000, 600, "Roaming Light")
+	in3D.Init(000, 000, "Roaming Light")
 	in3D.SetCameraPosition(in3D.NewPosition(0, 15, 130))
 	in3D.Enable(in3D.PointerLock, true)
 	in3D.Enable(in3D.FlyMode, true)

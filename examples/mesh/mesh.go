@@ -8,7 +8,7 @@ func main() {
 
 	var objects []*in3D.DrawnObject
 
-	in3D.Init(800, 600, "Wavefront Loader")
+	in3D.Init(800, 600, "Example")
 	in3D.SetClearColor(0.1, 0.1, 0.1, 1)
 	in3D.SetCameraPosition(in3D.NewPosition(0, 0.55, 2))
 	in3D.SetCameraSpeed(0.1)
@@ -62,8 +62,8 @@ func main() {
 
 	for !in3D.ShouldClose() {
 		in3D.Update()
-		for _, o := range objects {
-			o.Draw()
+		for _, object := range objects {
+			object.Draw()
 		}
 		in3D.SwapBuffers()
 	}

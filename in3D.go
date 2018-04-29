@@ -24,7 +24,7 @@ func Init(width, height int, title string) {
 	glfw.WindowHint(glfw.OpenGLForwardCompatible, glfw.True)
 
 	var err error
-	if width == 0 {
+	if width == 0 || height == 0 {
 		mode := glfw.GetPrimaryMonitor().GetVideoMode()
 		width = mode.Width
 		height = mode.Height
